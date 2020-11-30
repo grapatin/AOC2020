@@ -35,7 +35,7 @@ function processInput(typeofData: string) {
     let rawInput = inputData(typeofData);
 
     let inputArray: Array<String> = new Array();
-    const regex: RegExp = /(-?[0-9]+[,]\s+-?[0-9]+)/gmus;
+    const regex: RegExp = /(-?[0-9]+[,]\s+-?[0-9]+)/gm;
 
     let temp = rawInput.match(regex);
 
@@ -60,7 +60,7 @@ function partB(typeOfData: string): number {
 
 function main() {
     TestsForPart1();
-    let resultPart1 = partA('PartA'); //Answer is between 267592 and 270165
+    let resultPart1 = partA('PartA'); 
     console.log('Puzzle part 1 solution is', resultPart1);
 
     TestsForPart2();
