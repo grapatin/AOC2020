@@ -35,7 +35,7 @@ function processInput(typeofData: string) {
     let rawInput = inputData(typeofData);
 
     let inputArray: Array<String> = new Array();
-    const regex: RegExp = /(-?[0-9]+[,]\s+-?[0-9]+)/gm;
+    const regex: RegExp = /\d+/gm;
 
     let temp = rawInput.match(regex);
 
@@ -49,11 +49,29 @@ function processInput(typeofData: string) {
 function partA(typeOfData: string): number {
     let input: Array<String> = processInput(typeOfData);
 
+    for (let i = 0; i < input.length; i++) {
+        for (let l = 1; l < input.length; l++) {
+            if ((+input[i] + +input[l]) == 2020) {
+                return +input[i] * +input[l]
+            }
+        }
+    }
+
     return 0;
 }
 
 function partB(typeOfData: string): number {
     let input: Array<String> = processInput(typeOfData);
+
+    for (let i = 0; i < input.length; i++) {
+        for (let l = 1; l < input.length; l++) {
+            for (let k = 2; k < input.length; k++) {
+                if ((+input[i] + +input[l] + +input[k]) == 2020) {
+                    return +input[i] * +input[l] * +input[k];
+                }
+            }
+        }
+    }
 
     return 0;
 }

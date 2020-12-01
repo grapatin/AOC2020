@@ -5,15 +5,14 @@ export const puzzle1_ex = new Array;
 export const puzzle1_resultex = new Array;
 export const puzzle2_ex = new Array;
 export const puzzle2_resultex = new Array;
-puzzle1_resultex[0] = 36334;
+puzzle1_resultex[0] = 514579;
 puzzle1_ex[0] = `
-#######
-#G..#E#
-#E#E.E#
-#G.##.#
-#...#E#     
-#...E.#
-#######`;
+1721
+979
+366
+299
+675
+1456`;
 
 puzzle1_resultex[1] = 39514;
 puzzle1_ex[1] = `
