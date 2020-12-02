@@ -34,7 +34,7 @@ function inputData(typeOfData: string) {
 function processInput(typeofData: string) {
     let rawInput = inputData(typeofData);
 
-    let inputArray: Array<String> = new Array();
+    let inputArray: Array<string> = new Array();
     const regex: RegExp = /(-?[0-9]+[,]\s+-?[0-9]+)/gmus;
 
     let temp = rawInput.match(regex);
@@ -47,13 +47,13 @@ function processInput(typeofData: string) {
 }
 
 function partA(typeOfData: string): number {
-    let input: Array<String> = processInput(typeOfData);
+    let input: Array<string> = processInput(typeOfData);
 
     return 0;
 }
 
 function partB(typeOfData: string): number {
-    let input: Array<String> = processInput(typeOfData);
+    let input: Array<string> = processInput(typeOfData);
 
     return 0;
 }
