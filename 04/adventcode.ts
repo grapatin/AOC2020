@@ -36,7 +36,7 @@ function processInput(typeofData: string) {
 
     let rawArray = rawInput.split('\n\n');
     let inputArray: Array<Array<string>> = new Array();
-    const regex: RegExp = /[a-z]+:[#0-9a-z]+/gm;;
+    const regex: RegExp = /[a-z]+:[#0-9a-z]+/gm;
 
     rawArray.forEach(element => {
         let tArray = new Array;
