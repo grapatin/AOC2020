@@ -101,6 +101,14 @@ function partA(typeOfData: string): number {
 
 function partB(typeOfData: string): number {
     let input: Array<Array<string>> = processInput(typeOfData);
+    const reg_hgt = /hgt:((59|6[0-9]|7[0-6])in|(1[5-8][0-9]|19[0-3])cm)/;
+    const reg_byr = /byr:(19[2-8][0-9]|199[0-9]|200[0-2])/;
+    const reg_iyr = /iyr:(201[0-9]|2020)/;
+    const reg_eyr = /eyr:(202[0-9]|2030)/;
+    const reg_hcl = /hcl:#[0-9a-f]{6}$/;
+    const reg_pid = /pid:[0-9]{9}$/;
+    const reg_ecl = /ecl:(amb|blu|brn|gry|grn|hzl|oth)/;
+
     let count = 0;
     input.forEach(passport => {
         let _byr = false;
@@ -113,63 +121,27 @@ function partB(typeOfData: string): number {
         let _cid = false;
 
         passport.forEach(element => {
-            if (element.substr(0, 4) == 'byr:') {
-                let year = +element.substr(4);
-                if ((year > 1919) && (year < 2003)) {
-                    _byr = true;
-                }
+            element = element.trim();
+            if (reg_byr.test(element)) {
+                _byr = true;
             }
-
-
-            if (element.substr(0, 4) == 'iyr:') {
-                let year = +element.substr(4);
-                if ((year > 2009) && (year < 2021)) {
-                    _iyr = true;
-                }
+            if (reg_iyr.test(element)) {
+                _iyr = true;
             }
-            if (element.substr(0, 4) == 'eyr:') {
-                let year = +element.substr(4);
-                if ((year > 2019) && (year < 2031)) {
-                    _eyr = true;
-                }
+            if (reg_eyr.test(element)) {
+                _eyr = true;
             }
-            if (element.substr(0, 4) == 'hgt:') {
-                if (element.includes('cm')) {
-                    let height = +element.substr(4, 3);
-                    if ((height >= 150) && (height <= 193)) {
-                        _hgt = true;
-                    }
-                } else if (element.includes('in')) {
-                    let height = +element.substr(4, 2);
-                    if ((height >= 59) && (height <= 76)) {
-                        _hgt = true;
-                    }
-                }
+            if (reg_hgt.test(element)) {
+                _hgt = true;
             }
-
-            if (element.substr(0, 4) == 'hcl:') {
-                let tempS = element.substr(5);
-                if (tempS.length == 6) {
-                    let hexCo = parseInt(element.substr(5), 16);
-                    if (!Number.isNaN(hexCo)) {
-                        _hcl = true;
-                    }
-                }
+            if (reg_hcl.test(element)) {
+                _hcl = true;
             }
-            if (element.substr(0, 4) == 'ecl:') {
-                let testString = 'amb blu brn gry grn hzl oth'
-                let eyeC = element.substr(4);
-                if (testString.includes(eyeC))
-                    _ecl = true;
+            if (reg_ecl.test(element)) {
+                _ecl = true;
             }
-            if (element.substr(0, 4) == 'pid:') {
-                let __pid = element.substr(4);
-                if (__pid.length == 9) {
-                    let _nu = +__pid;
-                    if (!Number.isNaN(_nu)) {
-                        _pid = true;
-                    }
-                }
+            if (reg_pid.test(element)) {
+                _pid = true;
             }
             if (element.substr(0, 4) == 'cid:') {
                 _cid = true;
