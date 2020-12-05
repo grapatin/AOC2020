@@ -5,8 +5,8 @@ export const puzzle1_ex = new Array;
 export const puzzle1_resultex = new Array;
 export const puzzle2_ex = new Array;
 export const puzzle2_resultex = new Array;
-puzzle1_resultex[0] = 1;
-puzzle1_ex[0] = ``;
+puzzle1_resultex[0] = 567;
+puzzle1_ex[0] = `BFFFBBFRRR`;
 
 puzzle1_resultex[1] = 39514;
 puzzle1_ex[1] = `
