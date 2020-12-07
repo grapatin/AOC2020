@@ -60,7 +60,7 @@ function partB(typeOfData: string): number {
 
 function main() {
     TestsForPart1();
-    let resultPart1 = partA('PartA'); //Answer is between 267592 and 270165
+    let resultPart1 = partA('PartA');
     console.log('Puzzle part 1 solution is', resultPart1);
 
     TestsForPart2();
