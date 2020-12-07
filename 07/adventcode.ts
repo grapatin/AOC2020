@@ -114,36 +114,31 @@ function partB(typeOfData: string): number {
     //Add everything to a Map where bag color is the key and containg bags are values
     let containingMap = new Map
     input.forEach(inputRow => {
-        //Only add it if it has cointaing colors
-        if (inputRow.length > 1) {
-            for (let i = 1; i < inputRow.length; i++) {
-                let currentCNumber: Array<string> = inputRow[i].match(/\d/); //Get the number
-                let currentC: Array<string> = inputRow[i].match(/[ a-z]+$/);
-                if (+currentCNumber > 0) {
-                    let value = currentC[0].trim()
-                    let valueCount = +currentCNumber;
-                    let key = inputRow[0].trim();
-                    let newBag: intBag = {
-                        color: value,
-                        count: valueCount
-                    };
-                    if (containingMap.has(key)) {
-                        let newValue: Array<intBag> = containingMap.get(key);
-                        newValue.push(newBag);
-                        containingMap.set(key, newValue)
-                    } else {
-                        let bagArray: Array<intBag> = new Array;
-                        bagArray.push(newBag);
-                        containingMap.set(key, bagArray);
-                    }
+        for (let i = 1; i < inputRow.length; i++) {
+            let currentCNumber: Array<string> = inputRow[i].match(/\d/); //Get the number
+            let currentC: Array<string> = inputRow[i].match(/[ a-z]+$/);
+            if (+currentCNumber > 0) {
+                let value = currentC[0].trim()
+                let valueCount = +currentCNumber;
+                let key = inputRow[0].trim();
+                let newBag: intBag = {
+                    color: value,
+                    count: valueCount
+                };
+                if (containingMap.has(key)) {
+                    let newValue: Array<intBag> = containingMap.get(key);
+                    newValue.push(newBag);
+                    containingMap.set(key, newValue)
+                } else {
+                    let bagArray: Array<intBag> = new Array;
+                    bagArray.push(newBag);
+                    containingMap.set(key, bagArray);
                 }
             }
-
         }
     })
 
     let findBag = 'shiny gold';
-    let alreadyFoundBagsMap = new Map;
 
     return rBag(findBag) - 1;
 
@@ -162,7 +157,7 @@ function partB(typeOfData: string): number {
 
 function main() {
     TestsForPart1();
-    let resultPart1 = partA('PartA'); //Answer is between 267592 and 270165
+    let resultPart1 = partA('PartA');
     console.log('Puzzle part 1 solution is', resultPart1);
 
     TestsForPart2();
