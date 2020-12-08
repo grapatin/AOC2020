@@ -1,5 +1,5 @@
 export const puzzle1_number_of_test = 1;
-export const puzzle2_number_of_test = 0;
+export const puzzle2_number_of_test = 1;
 //First part
 export const puzzle1_ex = new Array;
 export const puzzle1_resultex = new Array;

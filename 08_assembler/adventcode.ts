@@ -1,9 +1,10 @@
 import { puzzle1_ex, puzzle1_number_of_test, puzzle1_resultex, puzzle2_ex, puzzle2_number_of_test, puzzle2_resultex } from "./testinput";
 import * as fs from 'fs';
 import * as util from 'util'
-import { defaultMaxListeners } from "stream";
 import { WriteOutput } from "./WriteOutput";
 import { assert } from "console";
+import { Assembler } from "./Assembler";
+
 const readFile = util.promisify(fs.readFile);
 
 const writeFile = new WriteOutput();
@@ -32,7 +33,7 @@ function inputData(typeOfData: string) {
     return returnData;
 }
 
-interface CodeBlock {
+export interface CodeBlock {
     command: string;
     value: number;
 }
@@ -63,7 +64,7 @@ function partA(typeOfData: string): number {
         };
         codeArray.push(codeBlock);
     }
-
+    
     let cont = true;
     let instructionPointerMap = new Map;
     let ip = 0;
@@ -98,74 +99,27 @@ function partA(typeOfData: string): number {
     return 0;
 }
 
+export const numberOfRegs = 4;
 function partB(typeOfData: string): number {
     let input: Array<string> = processInput(typeOfData);
-    let codeArray: Array<CodeBlock> = new Array;
-
-    while (input.length > 0) {
-        let codeBlock: CodeBlock = {
-            command: input.shift(),
-            value: +input.shift()
-        };
-        codeArray.push(codeBlock);
-    }
-
+    let codeLength = input.length / 2;
 
     //Change first instruction and cont until return != 0
-    while (true) {
-        for (let i = 0; i < codeArray.length; i++) {
-            if (codeArray[i].command == 'jmp') {
-                codeArray[i].command = 'nop';
-                let accum = calc();
-                if (accum != 0) {
-                    return accum
-                }
-                codeArray[i].command = 'jmp';
-            } else if (codeArray[i].command == 'nop') {
-                codeArray[i].command = 'jmp'
-                let accum = calc();
-                if (accum != 0) {
-                    return accum
-                }
-                codeArray[i].command = 'nop';
-            }
+    for (let i = 0; i < codeLength; i++) {
+        let assemblerObj = new Assembler(input);
+        if (assemblerObj.codeArray[i].command == 'jmp') {
+            assemblerObj.codeArray[i].command = 'nop';
+
+        } else if (assemblerObj.codeArray[i].command == 'nop') {
+            assemblerObj.codeArray[i].command = 'jmp'
+        }
+        let accum = assemblerObj.calc();
+        if (accum != 0) {
+            assemblerObj.print();
+            return accum
         }
     }
 
-    function calc() {
-        let cont = true;
-        let instructionPointerMap = new Map;
-        let ip = 0;
-        let accum = 0;
-        let count = 0;
-        while (cont) {
-            if (ip > codeArray.length - 1) {
-                return accum
-            }
-            let codeBlock = codeArray[ip];
-            if (!instructionPointerMap.has(ip)) {
-                instructionPointerMap.set(ip, accum);
-                count += 1;
-            } else {
-                return 0;
-            }
-            switch (codeBlock.command) {
-                case 'jmp':
-                    ip = ip + codeBlock.value
-                    break;
-                case 'acc':
-                    accum += codeBlock.value
-                    ip++;
-                    break;
-                case 'nop':
-                    ip++
-                    break;
-                default:
-                    assert('Unexpected command', codeBlock.command);
-                    break;
-            }
-        }
-    }
 
     return 0;
 }
