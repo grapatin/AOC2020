@@ -1,0 +1,8 @@
+
+0:nop 0 Acc: 0
+1:acc 1 Acc: 0
+2:jmp 4 Acc: 1
+6:acc 1 Acc: 1
+7:jmp -4 Acc: 2
+3:acc 3 Acc: 2
+4:jmp -3 Acc: 5

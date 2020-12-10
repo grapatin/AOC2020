@@ -3,6 +3,7 @@ import * as fs from 'fs';
 import * as util from 'util'
 import { defaultMaxListeners } from "stream";
 import { WriteOutput } from "./WriteOutput";
+import { setupMaster } from "cluster";
 const readFile = util.promisify(fs.readFile);
 
 const writeFile = new WriteOutput();
@@ -35,7 +36,7 @@ function processInput(typeofData: string) {
     let rawInput = inputData(typeofData);
 
     let inputArray: Array<number> = new Array();
-    const regex: RegExp = /h/;
+    const regex: RegExp = /a/;
 
     let temp = rawInput.split('\n');
 
@@ -46,89 +47,105 @@ function processInput(typeofData: string) {
     return inputArray;
 }
 
-function partA(typeOfData: string, preAmble: number): number {
+function partA(typeOfData: string): number {
     let input: Array<number> = processInput(typeOfData);
 
-    while (true) {
-        let found = false;
-        for (let i = 0; i < preAmble; i++) {
-            for (let l = 1; l < preAmble; l++) {
-                if ((input[i] + input[l]) == input[preAmble]) {
-                    found = true;
-                }
-            }
-        }
-        if (found) {
-            //Value ok proceed
-            input.shift();
-        } else {
-            //value not approved, stop and return
-            return input[preAmble];
-        }
-    }
+    input.sort((a, b) => a - b);
 
-    return 0;
+    let count1 = 0;
+    let count2 = 0;
+    let count3 = 0;
+    let previousJolts = 0;
+    input.push(input[input.length - 1] + 3);
+    input.forEach(element => {
+        let diff = element - previousJolts;
+        switch (diff) {
+            case 3:
+                count3++;
+                break;
+            case 2:
+                count2++;
+                break;
+            case 1:
+                count1++;
+                break;
+            default:
+                console.log('Unexpected value', element);
+                break;
+        }
+        previousJolts = element;
+    })
+    return count3 * count1;
 }
 
-function partB(typeOfData: string, preAmble: number): number {
+function partB(typeOfData: string): number {
     let input: Array<number> = processInput(typeOfData);
-    let copyArray = input.slice();
 
-    while (true) {
-        let found = false;
-        for (let i = 0; i < preAmble; i++) {
-            for (let l = 1; l < preAmble; l++) {
-                if ((input[i] + input[l]) == input[preAmble]) {
-                    found = true;
+    input.sort((a, b) => a - b);
+
+    let count1 = 0;
+    let count2 = 0;
+    let count3 = 0;
+    let cont1Array: Array<number> = new Array;
+    let cont1 = 0;
+    let previousJolts = 0;
+    input.push(input[input.length - 1] + 3);
+    input.forEach(element => {
+        let diff = element - previousJolts;
+        switch (diff) {
+            case 3:
+                count3++;
+                if (cont1 > 1) {
+                    cont1Array.push(cont1 + 1);
                 }
-            }
+                cont1 = 0;
+                break;
+            case 2:
+                count2++;
+                break;
+            case 1:
+                count1++;
+                cont1++;
+                break;
+            default:
+                console.log('Unexpected value', element);
+                break;
         }
-        if (found) {
-            //Value ok proceed
-            input.shift();
-        } else {
-            //This value does not match the XMAS protocoll
-            const notXMASnumber = input[preAmble];
+        previousJolts = element;
+    })
 
-            //find continues sample of numbers that add upp to the number found
-            //stop once larger than foundNumber, it is a hit if same sum
-            let currentArray = copyArray.slice();
-            while (true) {
-                let sum = 0;
-                let length = currentArray.length;
-                for (let i = 0; i < length; i++) {
-                    sum += currentArray[i];
-                    if (sum > notXMASnumber) {
-                        currentArray.shift();
-                        break;
-                    } else if (sum == notXMASnumber) {
-                        //correct sum found!
-                        let numbersInc = currentArray.slice(0, i + 1);
-                        let smallest = Math.min(...numbersInc);
-                        let largest = Math.max(...numbersInc);
-                        return smallest + largest;
-                    }
-                }
-            }
+    let sum = 1;
+
+    cont1Array.forEach(element => {
+        switch (element) {
+            case 3:
+                sum = sum * 2;
+                break;
+            case 4:
+                sum = sum * 4;
+                break;
+            case 5:
+                sum = sum * 7
+                break;
         }
-    }
+    })
 
-    return 0;
+    return sum;
 }
 
 function main() {
     TestsForPart1();
-    let resultPart1 = partA('PartA', 25);
+    let resultPart1 = partA('PartA');
     console.log('Puzzle part 1 solution is', resultPart1);
 
     TestsForPart2();
-    let resultPart2 = partB('PartB', 25);
+    let resultPart2 = partB('PartB');
     console.log('Puzzle part 2 solution is', resultPart2);
 
 
     function TestsForPart2() {
         for (let i = 0; i < puzzle2_number_of_test; i++) {
-            let testCalc = partB('T2_' + i, 5);
+            let testCalc = partB('T2_' + i);
             if (testCalc == puzzle2_resultex[i]) {
                 console.log('Puzzle part 2 example', i, 'passed');
             } else {
@@ -139,7 +156,7 @@ function main() {
 
     function TestsForPart1() {
         for (let i = 0; i < puzzle1_number_of_test; i++) {
-            let testCalc = partA('T1_' + i, 5);
+            let testCalc = partA('T1_' + i);
             if (testCalc == puzzle1_resultex[i]) {
                 console.log('Puzzle part 1 example', i, 'passed');
             } else {
