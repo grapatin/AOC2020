@@ -155,7 +155,7 @@ class waitingAreaB {
 
         //. = open
         //L = empty chair
-        //# = lumberyard
+        //# = Occupied seat
         for (let y = 0; y < this.waiting.length; y++) {
             let row = this.waiting[y];
             for (let x = 0; x < row.length; x++) {
@@ -172,6 +172,38 @@ class waitingAreaB {
                         switch (checkChar) {
                             case '.':
                                 //open area
+                                //We need to check until we reach outside or find a seat
+                                //We are looking in a direction
+                                for (let i = 1; i < 100000; i++) {
+                                    let xTemp2 = x + xDelta * i;
+                                    let yTemp2 = y + yDelta * i;
+                                    if ((xTemp2 < 0) || (xTemp2 > row.length - 1)) {
+                                        //abort
+                                        i = 100000;
+                                    } if (((yTemp2 < 0) || (yTemp2 > this.waiting.length - 1))) {
+                                        //abort
+                                        i = 100000;
+                                    }
+                                    else {
+                                        let checkChar2 = this.waiting[yTemp2][xTemp2];
+                                        switch (checkChar2) {
+                                            case 'L':
+                                                numberOfEmpty++;
+                                                //abort
+                                                i = 100000;
+                                                break;
+                                            case '#':
+                                                numberOfOccupied++
+                                                //abort
+                                                i = 100000;
+                                                break;
+                                            case '.':
+                                                //just continue
+                                                break;
+                                        }
+                                    }
+
+                                }
                                 break;
                             case 'L':
                                 numberOfEmpty++;
@@ -182,8 +214,9 @@ class waitingAreaB {
                             default:
                                 console.log('Unexpected checkChar', checkChar);
                                 break;
-                        }
+                            }
                     }
+
                 });
                 switch (char) {
                     case 'L':
@@ -192,7 +225,7 @@ class waitingAreaB {
                         }
                         break;
                     case '#':
-                        if (numberOfOccupied > 3) {
+                        if (numberOfOccupied > 4) {
                             this.tempWaiting[y][x] = 'L';
                         }
                         break;
@@ -255,6 +288,7 @@ function partB(typeOfData: string): number {
         seatingArea.printForest();
     }
 
+    //incorrect answer 2238, 2238
     return seatingArea.countScore();
 }
 
