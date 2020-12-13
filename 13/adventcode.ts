@@ -35,7 +35,7 @@ function processInput(typeofData: string) {
     let rawInput = inputData(typeofData);
 
     let inputArray: Array<string> = new Array();
-    const regex: RegExp = /(-?[0-9]+[,]\s+-?[0-9]+)/gmus;
+    const regex: RegExp = /\d+|x/gm;
 
     let temp = rawInput.match(regex);
 
@@ -47,15 +47,96 @@ function processInput(typeofData: string) {
 }
 
 function partA(typeOfData: string): number {
-    let input: Array<string> = processInput(typeOfData);
+    let input: Array<any> = processInput(typeOfData);
 
-    return 0;
+    let currentTime: number = +input.shift();
+
+    input = input.filter(elem => !isNaN(+elem))
+    let closetsTime = currentTime;
+    let bestBuss = 0;
+    let cont = true;
+    input.forEach(element => {  // 939 
+        let i = 1;
+        while (cont) {
+            if (currentTime <= element * i) {
+                let diff = element * i - currentTime
+                if (diff < closetsTime) {
+                    closetsTime = diff;
+                    bestBuss = element;
+                }
+                cont = false;
+            }
+            i++;
+        }
+        cont = true;
+    })
+
+    return closetsTime * bestBuss;
 }
 
 function partB(typeOfData: string): number {
     let input: Array<string> = processInput(typeOfData);
+    let currentTime: number = +input.shift();
 
-    return 0;
+    interface NN {
+        nmbr: number,
+        n: number,
+    }
+
+    let nnArray: Array<NN> = new Array
+    input.forEach((element, index) => {
+        if (!isNaN(+element)) {
+            const nnE: NN = {
+                nmbr: +element,
+                n: index
+            };
+            nnArray.push(nnE);
+        }
+    })
+
+    nnArray.sort((a, b) =>
+        b.nmbr - a.nmbr)
+
+    let cont = true;
+    let largestValue = nnArray[0].nmbr;
+    let largestOffset = nnArray[0].n;
+    nnArray.shift();
+    let x = 1;
+
+    let i_found = 0;
+    while (cont) {
+        let value = x * largestValue;
+        let cont2 = true;
+        let i = 0
+        while (cont2) {
+            //check if correct number
+            let checkValue = nnArray[i].nmbr
+            let checkOffset = nnArray[i].n;
+            let relativeOffset = checkOffset - largestOffset
+            let calc = (value + relativeOffset) % checkValue
+            if (calc != 0) {
+                //Does not add up lets cont
+                cont2 = false;
+            }
+            else {
+                i++
+                if ((cont2 == true) && (i == nnArray.length)) {
+                    //were are done!
+                    return value - largestOffset
+                } else {
+                    if (i_found < i) {
+                        i_found = i;
+                    }
+
+                }
+            }
+        }
+        let multiplier = 1
+        for (let k = 0; k < i_found; k++) {
+            multiplier = multiplier * nnArray[k].nmbr;
+        }
+        x = x + multiplier;
+    }
 }
 
 function main() {
