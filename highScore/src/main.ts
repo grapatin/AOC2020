@@ -5,7 +5,7 @@ const configuration = require('./cookie.json')
 
 var config = {
     method: 'get',
-    url: 'https://adventofcode.com/2020/leaderboard/private/view/663039.json',
+    url: 'https://adventofcode.com/2020/leaderboard/private/view/816241.json',
     headers: {
         'Cookie': configuration.cookie
     }
