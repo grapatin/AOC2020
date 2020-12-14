@@ -95,19 +95,25 @@ function partB(typeOfData: string): number {
 
 function main() {
     TestsForPart1();
+    let timeStart: number = Date.now();
     let resultPart1 = partA('PartA');
-    console.log('Puzzle part 1 solution is', resultPart1);
+    let diff: number = Date.now() - timeStart
+    console.log('Puzzle part 1 solution is', resultPart1, 'calculated in', diff, 'ms');
 
     TestsForPart2();
+    timeStart = Date.now();
     let resultPart2 = partB('PartB');
-    console.log('Puzzle part 2 solution is', resultPart2);
+    diff = Date.now() - timeStart;
+    console.log('Puzzle part 2 solution is', resultPart2, 'calculated in', diff, 'ms');
 
 
     function TestsForPart2() {
         for (let i = 0; i < puzzle2_number_of_test; i++) {
+            let timeStart: number = Date.now();
             let testCalc = partB('T2_' + i);
+            let diff: number = Date.now() - timeStart
             if (testCalc == puzzle2_resultex[i]) {
-                console.log('Puzzle part 2 example', i, 'passed');
+                console.log('Puzzle part 2 example', i, 'passed in', diff, 'ms');
             } else {
                 console.log('Puzzle part 2 example', i, 'failed got', testCalc, 'expected', puzzle2_resultex[i]);
             }
@@ -116,9 +122,11 @@ function main() {
 
     function TestsForPart1() {
         for (let i = 0; i < puzzle1_number_of_test; i++) {
+            let timeStart: number = Date.now();
             let testCalc = partA('T1_' + i);
+            let diff: number = Date.now() - timeStart
             if (testCalc == puzzle1_resultex[i]) {
-                console.log('Puzzle part 1 example', i, 'passed');
+                console.log('Puzzle part 1 example', i, 'passed', diff, 'ms');
             } else {
                 console.log('Puzzle part 1 example', i, 'failed got', testCalc, 'expected', puzzle1_resultex[i]);
             }

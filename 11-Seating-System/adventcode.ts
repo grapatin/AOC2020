@@ -288,18 +288,21 @@ function partB(typeOfData: string): number {
         seatingArea.printForest();
     }
 
-    //incorrect answer 2238, 2238
     return seatingArea.countScore();
 }
 
 function main() {
     TestsForPart1();
+    let timeStart: number = Date.now();
     let resultPart1 = partA('PartA');
-    console.log('Puzzle part 1 solution is', resultPart1);
+    let diff: number = Date.now() - timeStart
+    console.log('Puzzle part 1 solution is', resultPart1, 'calculated in', diff, 'ms');
 
     TestsForPart2();
+    timeStart = Date.now();
     let resultPart2 = partB('PartB');
-    console.log('Puzzle part 2 solution is', resultPart2);
+    diff = Date.now() - timeStart;
+    console.log('Puzzle part 2 solution is', resultPart2, 'calculated in', diff, 'ms');
 
 
     function TestsForPart2() {
