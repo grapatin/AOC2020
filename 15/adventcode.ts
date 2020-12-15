@@ -47,24 +47,28 @@ function processInput(typeofData: string) {
 }
 
 function partA(typeOfData: string): number {
+
     let input: Array<number> = processInput(typeOfData);
     let start = input.length;
-
-    for (let i = start; i < 2020; i++) {
-        let previousNumber = input[i - 1];
-        let copy = input.slice(0, input.length - 1);
-        if (copy.includes(previousNumber)) {
-            copy = copy.reverse();
-            let reverseIndex = copy.findIndex((element) => element == previousNumber);
-            let correctIndex = copy.length - reverseIndex - 1
-            input[i] = i - 1 - correctIndex
-        } else {
-            input[i] = 0;
-        }
-
+    let previousNumber = input[input.length - 1]
+    let numberMap = new Map;
+    for (let i = 0; i < input.length - 1; i++) {
+        numberMap.set(input[i], i);
     }
 
-    return input[2019]
+    for (let i = start; i < 2020; i++) {
+        if (numberMap.has(previousNumber)) {
+            let lastIndex = numberMap.get(previousNumber);
+            let newNumber = i - lastIndex - 1;
+            numberMap.set(previousNumber, i - 1);
+            previousNumber = newNumber;
+        } else {
+            numberMap.set(previousNumber, i - 1);
+            previousNumber = 0;
+        }
+    }
+
+    return previousNumber;
 }
 
 function partB(typeOfData: string): number {
@@ -72,18 +76,18 @@ function partB(typeOfData: string): number {
     let start = input.length;
     let previousNumber = input[input.length - 1]
     let numberMap = new Map;
-    for (let i = 0; i < input.length; i++) {
+    for (let i = 0; i < input.length - 1; i++) {
         numberMap.set(input[i], i);
     }
 
     for (let i = start; i < 30000000; i++) {
-        if (numberMap.has(previousNumber) {
+        if (numberMap.has(previousNumber)) {
             let lastIndex = numberMap.get(previousNumber);
-            let newNumber = i - lastIndex;
-            numberMap.set(newNumber, i);
+            let newNumber = i - lastIndex - 1;
+            numberMap.set(previousNumber, i - 1);
             previousNumber = newNumber;
         } else {
-            numberMap.set(0, i);
+            numberMap.set(previousNumber, i - 1);
             previousNumber = 0;
         }
     }
