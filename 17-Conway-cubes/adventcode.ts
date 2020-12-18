@@ -130,9 +130,6 @@ function partA(typeOfData: string): number {
                                     let value = tempXMap.get(deltaX);
                                     if (value == 1) {
                                         count++;
-                                        if ((deltaZ == 0) && (zCord == -1)) {
-                                            console.log('For z,y,x:', zCord, yCord, xCord, '# found at z,y,x:', deltaZ, deltaY, deltaX, 'Count=', count);
-                                        }
                                     }
                                 }
                             }
@@ -236,7 +233,7 @@ function partA(typeOfData: string): number {
     }
 
     function setState(zCord, yCord, xCord, state, turn) {
-        console.log('Turn', turn, 'set state=', state, 'at z,y,x', zCord, ',', yCord, ',', xCord)
+        //console.log('Turn', turn, 'set state=', state, 'at z,y,x', zCord, ',', yCord, ',', xCord)
         if (state == 1) {
             if (zCord < newMinZ) {
                 newMinZ = zCord;
@@ -310,8 +307,217 @@ function partA(typeOfData: string): number {
 
 function partB(typeOfData: string): number {
     let input: Array<Array<string>> = processInput(typeOfData);
+    let writeF = new WriteOutput();
 
-    return 0;
+    let _xdMap: Map<number, number>;
+    let _2dMap: Map<number, Map<number, number>> = new Map;
+    let _3dMap: Map<number, Map<number, Map<number, number>>> = new Map;
+    let main4DMap: Map<number, Map<number, Map<number, Map<number, number>>>> = new Map;
+
+    let minXCord = 100;
+    let maxXCord = -100;
+    let minYCord = 100;
+    let maxYCord = -100;
+
+    input.forEach((_1Dim, yCord) => {
+        _xdMap = new Map;
+        _1Dim.forEach((energy, xCord) => {
+            if (energy == '#') {
+                _xdMap.set(xCord, 1);
+                if (xCord > maxXCord) {
+                    maxXCord = xCord
+                }
+                if (xCord < minXCord) {
+                    minXCord = xCord
+                }
+            }
+        })
+        _2dMap.set(yCord, _xdMap);
+        if (yCord > maxYCord) {
+            maxYCord = yCord
+        }
+        if (yCord < minYCord) {
+            minYCord = yCord
+        }
+    })
+
+    _3dMap.set(0, _2dMap);
+    main4DMap.set(0, _3dMap);
+
+    let cordArray: Array<Array<number>> = new Array;
+    create4DDeltaArray();
+
+    let workMap: Map<number, Map<number, Map<number, Map<number, number>>>>;
+
+    let maxTurn = 6;
+    for (let turn = 0; turn < maxTurn; turn++) {
+        workMap = new Map; //start with an empy new map
+        print(turn);
+        for (let wCord = -6; wCord < 7; wCord++) {
+            for (let zCord = -6; zCord < 7; zCord++) {
+                for (let yCord = -20; yCord < 20; yCord++) {
+                    for (let xCord = -20; xCord < 20; xCord++) {
+                        let count = 0;
+                        for (let delta = 0; delta < cordArray.length; delta++) {
+                            let deltaW = wCord + cordArray[delta][3];
+                            let deltaZ = zCord + cordArray[delta][0];
+                            let deltaY = yCord + cordArray[delta][1];
+                            let deltaX = xCord + cordArray[delta][2];
+                            //Find number of activated power stages
+                            if (getState(main4DMap, deltaW, deltaZ, deltaY, deltaX)) {
+                                count++;
+                            }
+                        }
+                        let currentState = getState(main4DMap, wCord, zCord, yCord, xCord);
+                        if (currentState == 0) {
+                            if (count == 3) {
+                                setState(wCord, zCord, yCord, xCord, 1, turn);
+                            }
+                        } else {
+                            if ((count == 2) || (count == 3)) {
+                                setState(wCord, zCord, yCord, xCord, 1, turn);
+                            } else {
+                                setState(wCord, zCord, yCord, xCord, 0, turn);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        main4DMap = workMap;
+    }
+
+
+    function print(turn) {
+        let line: string = 'Turn: ' + turn + '\n';
+        for (let z = -6; z < 7 + 1; z++) {
+            line += 'levelZ=' + z + '\n';
+            if (main4DMap.has(z)) {
+                for (let y = -20; y < 20; y++) {
+                    let yMap = main4DMap.get(z);
+                    let xMap = new Map;
+                    if (yMap.has(y)) {
+                        xMap = yMap.get(y);
+                    }
+                    for (let x = -20; x < 20; x++) {
+                        if (xMap.has(x)) {
+                            line += xMap.get(x);
+                        } else {
+                            line += '0'
+                        }
+                    }
+                    line += '\n';
+                }
+                //console.log('\n', line);
+            }
+        }
+        writeF.writeLine(line);
+    }
+
+    function create4DDeltaArray() {
+        for (let w = -1; w < 2; w++) {
+            for (let z = -1; z < 2; z++) {
+                for (let y = -1; y < 2; y++) {
+                    for (let x = -1; x < 2; x++) {
+                        if ((w == 0) && (z == 0) && (y == 0) && (x == 0)) {
+                            //skip this one since it is origo
+                        } else {
+                            cordArray.push([x, y, z, w]);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    function setState(wCord, zCord, yCord, xCord, state, turn) {
+        //console.log('Turn', turn, 'set state=', state, 'at z,y,x', zCord, ',', yCord, ',', xCord)
+
+        if (state == 1) {
+            if (workMap.has(wCord)) {
+                let _3dMap = workMap.get(wCord);
+                if (_3dMap.has(zCord)) {
+                    let tempYMap = _3dMap.get(zCord);
+                    if (tempYMap.has(yCord)) {
+                        let tempXMap = tempYMap.get(yCord);
+                        tempXMap.set(xCord, state);
+                    } else {
+                        let tempXMap = new Map;
+                        tempXMap.set(xCord, state);
+                        tempYMap.set(yCord, tempXMap);
+                    }
+                } else {
+                    let tempYMap = new Map;
+                    let tempXMap = new Map;
+                    tempXMap.set(xCord, state);
+                    tempYMap.set(yCord, tempXMap);
+                    _3dMap.set(zCord, tempYMap);
+                }
+            } else {
+                let tempYMap = new Map;
+                let tempXMap = new Map;
+                let _3dMap = new Map;
+                tempXMap.set(xCord, state);
+                tempYMap.set(yCord, tempXMap);
+                _3dMap.set(zCord, tempYMap);
+                workMap.set(wCord, _3dMap);
+            }
+        }
+    }
+
+    function getState(_4dMap, wCord, zCord, yCord, xCord): number {
+        let value = 0;
+        if (_4dMap.has(wCord)) {
+            let tempZMap = _4dMap.get(wCord);
+            if (tempZMap.has(zCord)) {
+                let tempYMap = tempZMap.get(zCord);
+                if (tempYMap.has(yCord)) {
+                    let tempXMap = tempYMap.get(yCord);
+                    if (tempXMap.has(xCord)) {
+                        value = tempXMap.get(xCord);
+                    }
+                }
+            }
+        }
+        return value;
+    }
+
+    function cpMap(_4dMap) {
+        let tempWWorkMap = new Map;
+        let tempZWorkMap = new Map;
+        let tempYWorkMap = new Map;
+        let tempXWorkMap
+
+        _4dMap.forEach((_3dMap, keyW) => {
+            _3dMap.forEach((_2dMap, keyZ) => {
+                _2dMap.forEach((_1dMap, keyY) => {
+                    tempXWorkMap = new Map(_1dMap);
+                    tempYWorkMap.set(keyY, tempXWorkMap);
+                });
+                tempZWorkMap.set(keyZ, tempYWorkMap);
+                tempYWorkMap = new Map;
+            })
+            tempWWorkMap.set(keyW, tempZWorkMap);
+            tempZWorkMap = new Map
+        });
+
+        return tempWWorkMap;
+    }
+
+    let finalCount = 0;
+    main4DMap.forEach(_3DMap => {
+        _3DMap.forEach(yMap => {
+            yMap.forEach(xMap => {
+                xMap.forEach(state => {
+                    if (state == 1) {
+                        finalCount++;
+                    }
+                })
+            })
+        })
+    })
+
+    return finalCount;
 }
 
 function main() {
