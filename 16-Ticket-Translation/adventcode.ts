@@ -90,7 +90,7 @@ function partA(typeOfData: string): number {
 
     return sum;
 }
-let first = true;
+
 function partB(typeOfData: string): number {
     let input: Array<string> = processInput(typeOfData);
 
@@ -117,27 +117,13 @@ function partB(typeOfData: string): number {
     let tickets: Array<string> = input[2].split('\n')
     tickets.shift(); //drop title
 
-    tickets.forEach(ticket => {
-        let tempA = ticket.split(',');
-        //Remove if it contans one of the values to ignore
-        if (true) {
-            valuesToIgnore.forEach(value => {
-                for (var i = 0; i < tempA.length; i++) {
-                    if (tempA[i] === value) {
-                        tempA.splice(i, 1);
-                    }
-                }
-            })
-        }
-        nearbyTickets.push(tempA);
-    })
-    first = false;
+    dropInvalidTickets();
 
     let length = 20
     let sovledFor = 0;
     let PuzzleMap = new Map;
 
-    while (sovledFor < length - 1) {
+    while (sovledFor < length) {
         for (let ticketFieldCount = 0; ticketFieldCount < length; ticketFieldCount++) {
             let validFields: Array<boolean> = new Array(length).fill(true);
             nearbyTickets.forEach(ticket => {
@@ -146,25 +132,51 @@ function partB(typeOfData: string): number {
                     } else {
                         validFields[index] = false;
                     }
-
                 })
             })
             let countValidFields = 0;
-            let foundFieldIndex;
+            let foundFieldIndex = new Array;
             validFields.forEach((value, index) => {
                 if (value == true) {
                     countValidFields++;
-                    foundFieldIndex = index;
+                    foundFieldIndex.push(index);
                 }
             })
             if (countValidFields == 1) {
-                console.log('FieldIndex', foundFieldIndex, 'is Ticket field', ticketFieldCount);
-                PuzzleMap.set(foundFieldIndex, ticketFieldCount);
+                console.log('FieldIndex', foundFieldIndex[0], 'is Ticket field', ticketFieldCount);
+                PuzzleMap.set(foundFieldIndex[0], ticketFieldCount);
                 sovledFor++;
+            } else if (countValidFields == 3) {
+                console.log('but for 2 FieldIndex', foundFieldIndex, 'is Ticket field', ticketFieldCount);
             }
         }
     }
-    return 0;
+
+    let myTicket = input[1].split('\n')[1].split(',');
+
+
+    let temp0 = PuzzleMap.get(0)
+    let temp1 = myTicket[PuzzleMap.get(0)];
+
+    return +temp1 * +myTicket[PuzzleMap.get(1)] * +myTicket[PuzzleMap.get(2)] * +myTicket[PuzzleMap.get(3)] * +myTicket[PuzzleMap.get(4)] * +myTicket[PuzzleMap.get(5)];
+
+    function dropInvalidTickets() {
+        tickets.forEach(ticket => {
+            let tempA = ticket.split(',');
+            let drop = false;
+            //Remove ticket it contans one of the values to ignore
+            valuesToIgnore.forEach(value => {
+                for (var i = 0; i < tempA.length; i++) {
+                    if (tempA[i] === value) {
+                        drop = true;
+                    }
+                }
+            });
+            if (!drop) {
+                nearbyTickets.push(tempA);
+            }
+        });
+    }
 }
 
 function main() {
