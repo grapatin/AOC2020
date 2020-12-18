@@ -34,65 +34,28 @@ function inputData(typeOfData: string) {
 function processInput(typeofData: string) {
     let rawInput = inputData(typeofData);
 
-    let inputArray: Array<number> = new Array();
-    const regex: RegExp = /a/;
+    let inputArray: Array<string> = new Array();
+    const regex: RegExp = /(-?[0-9]+[,]\s+-?[0-9]+)/gmus;
 
-    let temp = rawInput.split(',')
+    let temp = rawInput.match(regex);
 
     temp.forEach(element => {
-        inputArray.push(+element);
+        inputArray.push(element);
     })
 
     return inputArray;
 }
 
 function partA(typeOfData: string): number {
+    let input: Array<string> = processInput(typeOfData);
 
-    let input: Array<number> = processInput(typeOfData);
-    let start = input.length;
-    let previousNumber = input[input.length - 1]
-    let numberMap = new Map;
-    for (let i = 0; i < input.length - 1; i++) {
-        numberMap.set(input[i], i);
-    }
-
-    for (let i = start; i < 2020; i++) {
-        if (numberMap.has(previousNumber)) {
-            let lastIndex = numberMap.get(previousNumber);
-            let newNumber = i - lastIndex - 1;
-            numberMap.set(previousNumber, i - 1);
-            previousNumber = newNumber;
-        } else {
-            numberMap.set(previousNumber, i - 1);
-            previousNumber = 0;
-        }
-    }
-
-    return previousNumber;
+    return 0;
 }
 
 function partB(typeOfData: string): number {
-    let input: Array<number> = processInput(typeOfData);
-    let start = input.length;
-    let previousNumber = input[input.length - 1]
-    let numberMap = new Map;
-    for (let i = 0; i < input.length - 1; i++) {
-        numberMap.set(input[i], i);
-    }
+    let input: Array<string> = processInput(typeOfData);
 
-    for (let i = start; i < 30000000; i++) {
-        if (numberMap.has(previousNumber)) {
-            let lastIndex = numberMap.get(previousNumber);
-            let newNumber = i - lastIndex - 1;
-            numberMap.set(previousNumber, i - 1);
-            previousNumber = newNumber;
-        } else {
-            numberMap.set(previousNumber, i - 1);
-            previousNumber = 0;
-        }
-    }
-
-    return previousNumber;
+    return 0;
 }
 
 function main() {
