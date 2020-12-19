@@ -48,10 +48,10 @@ function processInput(typeofData: string) {
     return inputArray;
 }
 
-function substition(rulesRows) {
+function substition(rulesRows, second) {
     let processedRules: Array<string> = new Array;
 
-    let rulesRowsArray = new Array;
+    let rulesRowsArray: Array<Array<string>> = new Array;
 
     rulesRows.forEach(row => {
         let temp = row.split(' ');
@@ -61,25 +61,45 @@ function substition(rulesRows) {
         temp.push(')');
         rulesRowsArray[index] = temp.slice();
     });
+    if (second) {
+
+        //now we need to fix those specialcases
+        // 8 => 42 | 42 8
+        rulesRowsArray[8] = [];
+        rulesRowsArray[8] = ['('].concat(['('], rulesRowsArray[42], [')'], ['|'], ['('], rulesRowsArray[42], rulesRowsArray[8], [')'], [')']);
+        rulesRowsArray[8] = ['('].concat(rulesRowsArray[8], ['|'], ['('], rulesRowsArray[42], rulesRowsArray[8], [')'], [')']);
+        rulesRowsArray[8] = ['('].concat(rulesRowsArray[8], ['|'], ['('], rulesRowsArray[42], rulesRowsArray[8], [')'], [')']);
+        rulesRowsArray[8] = ['('].concat(rulesRowsArray[8], ['|'], ['('], rulesRowsArray[42], rulesRowsArray[8], [')'], [')']);
+        rulesRowsArray[8] = ['('].concat(rulesRowsArray[8], ['|'], ['('], rulesRowsArray[42], rulesRowsArray[8], [')'], [')']);
+
+        //11 => 42 31 | 42 11 31
+        rulesRowsArray[11] = [];
+        rulesRowsArray[11] = ['('].concat(['('], rulesRowsArray[42], rulesRowsArray[31], [')'], ['|'], ['('], rulesRowsArray[42], rulesRowsArray[11], rulesRowsArray[31], [')'], [')']);
+        rulesRowsArray[11] = ['('].concat(['('], rulesRowsArray[42], rulesRowsArray[31], [')'], ['|'], ['('], rulesRowsArray[42], rulesRowsArray[11], rulesRowsArray[31], [')'], [')']);
+        rulesRowsArray[11] = ['('].concat(['('], rulesRowsArray[42], rulesRowsArray[31], [')'], ['|'], ['('], rulesRowsArray[42], rulesRowsArray[11], rulesRowsArray[31], [')'], [')']);
+        rulesRowsArray[11] = ['('].concat(['('], rulesRowsArray[42], rulesRowsArray[31], [')'], ['|'], ['('], rulesRowsArray[42], rulesRowsArray[11], rulesRowsArray[31], [')'], [')']);
+        rulesRowsArray[11] = ['('].concat(['('], rulesRowsArray[42], rulesRowsArray[31], [')'], ['|'], ['('], rulesRowsArray[42], rulesRowsArray[11], rulesRowsArray[31], [')'], [')']);
+    }
+
 
     let cont = true;
     while (cont) {
         cont = false
-        for (let i = 0; i < rulesRowsArray.length; i++) {
-            for (let k = 0; k < rulesRowsArray[i].length; k++) {
-                let value = rulesRowsArray[i][k]
+        rulesRowsArray.forEach((row, index) => {
+            for (let k = 0; k < row.length; k++) {
+                let value = +rulesRowsArray[index][k]
                 if (!isNaN(value)) {
                     cont = true
                     //its a number lets substitute
                     let toInsert = rulesRowsArray[value];
                     let newArray = new Array;
-                    newArray = rulesRowsArray[i].slice(0, k)
+                    newArray = rulesRowsArray[index].slice(0, k);
                     newArray = newArray.concat(toInsert);
-                    newArray = newArray.concat(rulesRowsArray[i].slice(k + 1));
-                    rulesRowsArray[i] = newArray
+                    newArray = newArray.concat(rulesRowsArray[index].slice(k + 1));
+                    rulesRowsArray[index] = newArray
                 }
             }
-        }
+        });
     }
 
     rulesRowsArray.forEach((element, index) => {
@@ -149,7 +169,8 @@ function partA(typeOfData: string): number {
     let rulesArray = input[0];
     let receivedMessages = input[1];
     let count = 0;
-    let processedRulesValidRegEx = substition(rulesArray);
+    let countWrongLengt = 0;
+    let processedRulesValidRegEx = substition(rulesArray, false);
     //let checkString = createString(processedRules);
     //check rules against receivedMessages
     receivedMessages.forEach(message => {
@@ -158,10 +179,13 @@ function partA(typeOfData: string): number {
         if (result != null) {
             if (result[0].length == message.length) {
                 count++
+            } else {
+                countWrongLengt++;
             }
         }
 
     })
+    console.log('A count', count, 'wrongLength', countWrongLengt)
     return count;
 }
 
@@ -170,27 +194,34 @@ function partB(typeOfData: string): number {
     let rulesArray = input[0];
     let receivedMessages = input[1];
     let count = 0;
-    let processedRulesValidRegEx = substition(rulesArray);
-    //let checkString = createString(processedRules);
+    let countWrongLengt = 0;
+    let processedRulesValidRegEx = substition(rulesArray, true);
     //check rules against receivedMessages
     receivedMessages.forEach(message => {
         let re = new RegExp(processedRulesValidRegEx[0])
         let result = message.match(re);
         if (result != null) {
             if (result[0].length == message.length) {
-                count++
+                count++;
+                //console.log('Match on:', message);
+            } else {
+                countWrongLengt++;
             }
         }
 
     })
+    console.log('A count', count, 'wrongLength', countWrongLengt)
     return count;
 }
 
 function main() {
+    let timeStart;
+    let diff;
+
     TestsForPart1();
-    let timeStart: number = Date.now();
+    timeStart = Date.now();
     let resultPart1 = partA('PartA');
-    let diff: number = Date.now() - timeStart
+    diff = Date.now() - timeStart
     console.log('Puzzle part 1 solution is', resultPart1, 'calculated in', diff, 'ms');
 
     TestsForPart2();

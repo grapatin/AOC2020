@@ -32,7 +32,7 @@ puzzle1_resultex[4] = 1;
 puzzle1_ex[4] = ``;
 
 //Second part
-puzzle2_resultex[0] = 2;
+puzzle2_resultex[0] = 12;
 puzzle2_ex[0] = `42: 9 14 | 10 1
 9: 14 27 | 1 26
 10: 23 14 | 28 1
