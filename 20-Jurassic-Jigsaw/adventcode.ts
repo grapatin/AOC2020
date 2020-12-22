@@ -67,10 +67,11 @@ function processInput(typeofData: string) {
         //calculate checksums
         let sideChecksums = new Map;
         let topString = xyCords[0].join('');
-        let bottomString = xyCords[9].join('');
+        let temp = xyCords[9].slice();
+        let bottomString = temp.reverse().join('');
         let leftString = '', rigthString = '';
         for (let i = 0; i < 10; i++) {
-            leftString += xyCords[i][0];
+            leftString += xyCords[9 - i][0];
             rigthString += xyCords[i][9];
         }
         sideChecksums.set(parseInt(topString, 2), 0);
@@ -166,6 +167,7 @@ class ImageTile {
 
     rotateOneTick() {
         this._UPConst++
+        this._rotation++;
         if (this._UPConst > 3) {
             this._flipped = true;
             this._UPConst = 0;
@@ -191,13 +193,14 @@ class ImageTile {
             this._down = this._image.getImageFromCheckSum(this._normalRotationChecksum.get(this._DOWNConst), this._ID);
             this._left = this._image.getImageFromCheckSum(this._normalRotationChecksum.get(this._LEFTConst), this._ID);
         } else {
-            this._up = this._image.getImageFromCheckSum(this._flippedRotationChecksum.get(this._UPConst), this._ID);
+            //this._up = this._image.getImageFromCheckSum(this._flippedRotationChecksum.get(this._UPConst), this._ID);
+            this._up = this._image.getImageFromCheckSum(this._flippedRotationChecksum.get(this._DOWNConst), this._ID);
             this._right = this._image.getImageFromCheckSum(this._flippedRotationChecksum.get(this._RIGTHConst), this._ID);
-            this._down = this._image.getImageFromCheckSum(this._flippedRotationChecksum.get(this._DOWNConst), this._ID);
+            //this._down = this._image.getImageFromCheckSum(this._flippedRotationChecksum.get(this._DOWNConst), this._ID);
+            this._down = this._image.getImageFromCheckSum(this._flippedRotationChecksum.get(this._UPConst), this._ID);
             this._left = this._image.getImageFromCheckSum(this._flippedRotationChecksum.get(this._LEFTConst), this._ID);
         }
     }
-
 
     matchTileAccordingToInput(oriententation: number, imageTile: ImageTile): boolean {
         this.setNeighbours();
@@ -222,6 +225,50 @@ class ImageTile {
         }
 
         return false;
+    }
+
+    flipAccordingly() {
+        let rotated = this._rotation;
+        let xyArray = this._xyCords;
+
+
+        let temp = new Array;
+        if (this._flipped) {
+            rotated -= 4;
+            temp = flipp(xyArray);
+            xyArray = temp;
+        }
+        //to rotate, first flipp and then transpose
+        for (let i = 0; i < rotated; i++) {
+            xyArray = flipp(xyArray);
+            xyArray = transpose(xyArray);
+        }
+
+        this._xyCords = xyArray;
+        //console.log('id:', this._ID, '\n', this._xyCords)
+
+        function flipp(matrix) {
+            let flippedArray = new Array;
+            let length = matrix.length;
+            for (let y = 0; y < length; y++) {
+                flippedArray.push(xyArray[length - y - 1].slice());
+            }
+            return flippedArray;
+        }
+
+        function transpose(matrix) {
+            for (let i = 0; i < matrix.length; i++) {
+                for (let j = 0; j < i; j++) {
+                    const temp = matrix[i][j];
+                    matrix[i][j] = matrix[j][i];
+                    matrix[j][i] = temp;
+                }
+            }
+            return matrix
+        }
+    }
+    removeBorder() {
+
     }
 }
 
@@ -287,7 +334,7 @@ class Image {
                 }
             })
             if (singleCheckSum == 4) {
-                console.log('Possible Q:', tile._ID);
+                //console.log('Possible Q:', tile._ID);
                 qTiles.push(tile._ID);
             }
         })
@@ -297,6 +344,7 @@ class Image {
     //this will be the top left edge!
     fillOutTheArray(cornerID: number) {
         let currentImage = this._imageTileMap.get(cornerID);
+        currentImage._flipped = true;
         let leftImage: ImageTile = null;
         let topImage: ImageTile = null;
 
@@ -314,6 +362,7 @@ class Image {
                         currentImage.setNeighbours();
                     }
                 }
+                console.log('Tile ', currentImage._ID, 'is placed at yx', y, x, '# rotations:', currentImage._rotation, 'flipped:', currentImage._flipped);
                 this._yxArray[y][x] = currentImage;
                 if (x + 1 < this._size) {
                     leftImage = currentImage;
@@ -331,6 +380,21 @@ class Image {
             }
         }
     }
+
+    flipAccordingly() {
+        this._yxArray.forEach(xrow => {
+            xrow.forEach(tile => {
+                tile.flipAccordingly();
+            })
+        })
+    }
+    removeBorder() {
+        this._yxArray.forEach(xrow => {
+            xrow.forEach(tile => {
+                tile.removeBorder();
+            })
+        })
+    }
 }
 
 function partB(typeOfData: string): number {
@@ -345,6 +409,11 @@ function partB(typeOfData: string): number {
     image.SetChecksums();
     qTiles = image.findCorners();
     image.fillOutTheArray(qTiles[0]);
+    //phuh all tiles are correctly places
+    image.flipAccordingly();
+    image.removeBorder();
+    //remove border
+    //try to find sea monster
 
 
     return 0;

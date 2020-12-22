@@ -115,7 +115,7 @@ class AllergenFinder {
             })
         }
     }
-
+    
     score() {
         let sum = 0
         this._ingredientsMap.forEach(count => {
